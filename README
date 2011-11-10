@@ -6,6 +6,6 @@ Instructions:
 
 1. Make sure you have the `relnotes.sqlite` database file in the root of this project.
 2. Install the requirements (`pip install -r requirements/compiled.txt`)
-3. Run `python run.py > out.html`
+3. Run `python run.py <version> > out.html` replacing <version> with a Firefox version
 
 The file `out.html` contains the generated release notes page.

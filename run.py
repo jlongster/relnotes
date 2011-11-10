@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import sqlite3
 import jinja2
 
@@ -7,7 +8,7 @@ conn = sqlite3.connect('relnotes.sqlite')
 c = conn.cursor()
 
 product_name = 'Firefox'
-version = None
+version = sys.argv[1]
 channel_name = None
 
 c.execute('SELECT id, product_text FROM Products WHERE product_name=? LIMIT 1', (product_name,))
