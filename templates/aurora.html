@@ -71,16 +71,14 @@ EXTRA_HEADERS;
         <h3>Known Issues</h3>
         <div class="section-contents">
             <ul>
+              {% for item in known_issues %}
                 <li>
-                    <span class="tag tag-resolved">Resolved</span>
-                    <h5>Lorem ipsum dolor sit</h5>
-                    <p>Amet, consectetur adipiscing elit. Nullam tellus odio, gravida vitae convallis quis, euismod nec metus.</p>
+                    <span class="tag tag-{% if item[2] %}resolved{% else %}unresolved{% endif %}">
+                      {% if item[2] %}Resolved{% else %}Unresolved{% endif %}
+                    </span>
+                    <h5>{{ item[1] }}</h5>
                 </li>
-                <li>
-                    <span class="tag tag-unresolved">Unresolved</span>
-                    <h5>Lorem ipsum dolor sit</h5>
-                    <p>Amet, consectetur adipiscing elit. Nullam tellus odio, gravida vitae convallis quis, euismod nec metus.</p>
-                </li>
+              {% endfor %}
             </ul>
         </div>
     </section>
@@ -92,10 +90,10 @@ EXTRA_HEADERS;
     <section id="try">
         <h3>Try Firefox Aurora</h3>
         <ol>
-            <li>Check</li>
-            <li>Download</li>
-            <li>Install</li>
-            <li>Customize</li>
+          <li id="try1"><a href="#">Check</a></li>
+          <li id="try2"><a href="#">Download</a></li>
+          <li id="try3"><a href="#">Install</a></li>
+          <li id="try4"><a href="#">Customize</a></li>
         </ol>
     </section>
 
