@@ -1,0 +1,11 @@
+The `run.py` script generates the Aurora release notes page. This
+project will be improved in the future to handle all of Firefox's
+release notes pages.
+
+Instructions:
+
+1. Make sure you have the `relnotes.sqlite` database file in the root of this project.
+2. Install the requirements (`pip install -r requirements/compiled.txt`)
+3. Run `python run.py > out.html`
+
+The file `out.html` contains the generated release notes page.
