@@ -7,9 +7,13 @@ import jinja2
 conn = sqlite3.connect('relnotes.sqlite')
 c = conn.cursor()
 
-product_name = 'Firefox'
-version = sys.argv[1]
+product_name = sys.argv[1]
+version_arg = version = sys.argv[2]
 channel_name = None
+
+idx = version.find('a')
+if idx != -1:
+    version = version[:idx]
 
 c.execute('SELECT id, product_text FROM Products WHERE product_name=? LIMIT 1', (product_name,))
 (product_id, product_text) = c.fetchone()
@@ -75,6 +79,8 @@ known_issues = c.fetchall()
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 tmpl = env.get_template('aurora.html')
-print tmpl.render({'whats_new': whats_new,
+print tmpl.render({'product_name': product_name,
+                   'version': version_arg,
+                   'whats_new': whats_new,
                    'fixed': fixed,
                    'known_issues': known_issues}).encode('utf-8')

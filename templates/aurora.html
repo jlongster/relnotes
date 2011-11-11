@@ -2,33 +2,33 @@
     $page_title = 'Firefox Aurora Notes';
     $body_id    = 'aurora-relnotes';
     $body_class = 'darkbg';
-$fonts = <<<FONTS
-    <style>
-    @font-face {
-        font-family: 'MuseoSans';
-        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot');
-        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot?iefix') format('eot'),
-             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.woff') format('woff'),
-             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.ttf') format('truetype'),
-             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.svg#webfont') format('svg');
-    }
-    </style>
-FONTS;
 
     $extra_headers = <<<EXTRA_HEADERS
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
+    <script src="{$config['static_prefix']}/js/html5.js"></script>
     <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/aurora-releasenotes.css" media="screen" />
 EXTRA_HEADERS;
     include_once "{$config['file_root']}/{$lang}/includes/header.inc.php";
-
 ?>
 
 <div id="main-feature">
     <div id="relnoteswitcher">
         <h4>View notes for:</h4>
         <ul>
-            <li><span>Desktop</span></li>
-            <li><a href="#">Mobile</a></li>
+          <li>
+            {% if product_name == 'Firefox' %}
+            <span>Desktop</span>
+            {% else %}
+            <a href="/firefox/{{ version }}/releasenotes/">Desktop</a>
+            {% endif %}
+          </li>
+          <li>
+            {% if product_name == 'Firefox' %}
+            <a href="/mobile/{{ version }}/releasenotes/">Mobile</a>
+            {% else %}
+            <span>Mobile</span>
+            {% endif %}
+          </li>
         </ul>
     </div>
     <h2>
@@ -90,10 +90,10 @@ EXTRA_HEADERS;
     <section id="try">
         <h3>Try Firefox Aurora</h3>
         <ol>
-          <li id="try1"><a href="#">Check</a></li>
-          <li id="try2"><a href="#">Download</a></li>
-          <li id="try3"><a href="#">Install</a></li>
-          <li id="try4"><a href="#">Customize</a></li>
+          <li id="try1"><a href="#">Check »</a></li>
+          <li id="try2"><a href="#">Download »</a></li>
+          <li id="try3"><a href="#">Install »</a></li>
+          <li id="try4"><a href="#">Customize »</a></li>
         </ol>
     </section>
 
@@ -118,7 +118,7 @@ EXTRA_HEADERS;
     <section id="other">
         <h3>Other Resources</h3>
         <p><a href="#">Firefox Support page »</a></p>
-        <p><a href="#">Developer Informatio »</a></p>
+        <p><a href="#">Developer Information »</a></p>
         <p><a href="#">Future of Firefox Blog »</a></p>
     </section>
 
@@ -127,4 +127,3 @@ EXTRA_HEADERS;
 <?php
     @include_once "{$config['file_root']}/{$lang}/includes/footer.inc.php";
 ?>
-
