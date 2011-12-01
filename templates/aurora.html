@@ -16,15 +16,15 @@ EXTRA_HEADERS;
         <h4>View notes for:</h4>
         <ul>
           <li>
-            {% if product_name == 'Firefox' %}
+            {% if not is_mobile %}
             <span>Desktop</span>
             {% else %}
-            <a href="/firefox/{{ version }}/releasenotes/">Desktop</a>
+            <a href="/firefox/{{ version }}/auroranotes/">Desktop</a>
             {% endif %}
           </li>
           <li>
-            {% if product_name == 'Firefox' %}
-            <a href="/mobile/{{ version }}/releasenotes/">Mobile</a>
+            {% if not is_mobile %}
+            <a href="/mobile/{{ version }}/auroranotes/">Mobile</a>
             {% else %}
             <span>Mobile</span>
             {% endif %}
@@ -33,9 +33,9 @@ EXTRA_HEADERS;
     </div>
     <h2>
         <img src="<?=$config['static_prefix']?>/img/covehead/firefox/aurora/relnotes/title.png" alt="Firefox Aurora" height="51" width="346" />
-        Notes <small>(First offered to Aurora channel users on November 8th, 2011)</small>
+        Notes <small>(First offered to Aurora channel users on {{ release_date }})</small>
     </h2>
-    <p>Check out what’s below, and find answers to frequently asked questions. As always, you’re encouraged to <a href="#">tell us what you think</a>, or file a bug in <a href="#">Bugzilla</a>.</p>
+    <p>Check out what’s below, and find answers to frequently asked questions. As always, you’re encouraged to <a href="http://input.mozilla.com/feedback">tell us what you think</a>, or file a bug in <a href="https://bugzilla.mozilla.org/enter_bug.cgi">Bugzilla</a>.</p>
 </div>
 
 <div id="main-content">
@@ -59,7 +59,7 @@ EXTRA_HEADERS;
                     <span class="tag tag-fixed">FIXED</span>
                     <h5>
                       {{ item[1] }}
-                      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
+                      (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
                     </h5>
                 </li>
               {% endfor %}
@@ -76,7 +76,10 @@ EXTRA_HEADERS;
                     <span class="tag tag-{% if item[2] %}resolved{% else %}unresolved{% endif %}">
                       {% if item[2] %}Resolved{% else %}Unresolved{% endif %}
                     </span>
-                    <h5>{{ item[1] }}</h5>
+                    <h5>
+                      {{ item[1] }}
+                      (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
+                    </h5>
                 </li>
               {% endfor %}
             </ul>
@@ -90,36 +93,44 @@ EXTRA_HEADERS;
     <section id="try">
         <h3>Try Firefox Aurora</h3>
         <ol>
-          <li id="try1"><a href="#">Check »</a></li>
-          <li id="try2"><a href="#">Download »</a></li>
-          <li id="try3"><a href="#">Install »</a></li>
-          <li id="try4"><a href="#">Customize »</a></li>
+          <li id="try1">
+            <a href="{% if is_mobile %}/mobile/platforms/{% else %}/firefox/{{ version }}/system-requirements/{% endif %}">
+              Check »
+            </a>
+          </li>
+          <li id="try2">
+            <a href="{% if is_mobile %}/firefox/aurora/{% else %}/firefox/channel/{% endif %}">
+              Download »
+            </a>
+          </li>
+          {% if not is_mobile %}
+          <li id="try3"><a href="https://support.mozilla.com/en-US/kb/Installing%20Firefox">Install »</a></li>
+          <li id="try4"><a href="https://addons.mozilla.org/en-US/firefox/">Customize »</a></li>
+          {% endif %}
         </ol>
     </section>
 
     <section id="get-involved">
         <h3>Want to get involved?</h3>
         <p>Did you know that most of the contention Firefox Support was written by volunteers?</p>
-        <a href="#">Find out more »</a>
+        <a href="/contribute/">Find out more »</a>
     </section>
 
 
     <section id="problems">
         <h3>Having Problems?</h3>
         <ol>
-            <li><a href="#">Give us feedback on your experience with Aurora »</a> [dev only]</li>
-            <li><a href="#">Search for answers on the Firefox Support page »</a></li>
-            <li><a href="#">Look at the known issues list and see if we already know about the problem »</a> [dev only]</li>
-            <li><a href="#">If you can’t find reference to your issue, please consider filing a technical bug report »</a> [dev only]</li>
+          <li><a href="http://support.mozilla.com/">Search for answers on the Firefox Support page »</a></li>
+          <li><a href="#knownissues">Look at the known issues list and see if we already know about the problem »</a></li>
+          <li><a href="https://bugzilla.mozilla.org/enter_bug.cgi">If you can’t find reference to your issue, please consider filing a technical bug report »</a></li>
         </ol>
     </section>
 
 
     <section id="other">
-        <h3>Other Resources</h3>
-        <p><a href="#">Firefox Support page »</a></p>
-        <p><a href="#">Developer Information »</a></p>
-        <p><a href="#">Future of Firefox Blog »</a></p>
+      <h3>Other Resources</h3>
+      <p><a href="https://developer.mozilla.org/en/Firefox_10_for_developers">Developer Information »</a></p>
+      <p><a href="https://blog.mozilla.com/futurereleases/">Future of Firefox Blog »</a></p>
     </section>
 
 </div>

@@ -79,7 +79,8 @@ known_issues = c.fetchall()
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
 tmpl = env.get_template('aurora.html')
-print tmpl.render({'product_name': product_name,
+print tmpl.render({'is_mobile': product_name == 'Firefox for mobile',
+                   'release_date': release_date,
                    'version': version_arg,
                    'whats_new': whats_new,
                    'fixed': fixed,
