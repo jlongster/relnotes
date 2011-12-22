@@ -9,7 +9,7 @@ c = conn.cursor()
 
 product_name = sys.argv[1]
 version_arg = version = sys.argv[2]
-channel_name = None
+channel_name = sys.argv[3]
 
 idx = version.find('a')
 if idx != -1:
@@ -71,17 +71,18 @@ c.execute('SELECT Notes.bug_num, Notes.description, Notes.fixed_in_version, '
           '  (first_version=? AND '
           '    (first_channel IS NULL OR first_channel<=?))) AND '
           '(fixed_in_version IS NULL OR fixed_in_version>? OR '
-          '  (fixed_in_version=? AND '
-          '    (fixed_in_channel IS NULL OR fixed_in_channel>?))) '
+          '  (fixed_in_version=? AND fixed_in_channel>?)) '
           'ORDER BY sort_num DESC',
           (product_id, version, version, channel_id, version, version, channel_id))
 known_issues = c.fetchall()
 
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
-tmpl = env.get_template('aurora.html')
+tmpl = env.get_template(channel_name + '.html')
 print tmpl.render({'is_mobile': product_name == 'Firefox for mobile',
                    'release_date': release_date,
                    'version': version_arg,
                    'whats_new': whats_new,
                    'fixed': fixed,
-                   'known_issues': known_issues}).encode('utf-8')
+                   'known_issues': known_issues,
+                   'release_text': release_text,
+                   'product_text': product_text}).encode('utf-8')
