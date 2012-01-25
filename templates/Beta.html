@@ -1,0 +1,150 @@
+<?php
+    $page_title = 'Firefox Beta Notes';
+    $body_id    = 'beta-notes';
+$fonts = <<<FONTS
+    <style>
+    @font-face {
+        font-family: 'MuseoSans';
+        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot');
+        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot?iefix') format('eot'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.woff') format('woff'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.svg#webfont') format('svg');
+    }
+    </style>
+FONTS;
+
+    $extra_headers = <<<EXTRA_HEADERS
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/beta-notes.css" media="screen" />
+EXTRA_HEADERS;
+    include_once "{$config['file_root']}/{$lang}/includes/header.inc.php";
+
+?>
+
+<div id="main-feature">
+    <div id="relnoteswitcher">
+        <h4>View notes for:</h4>
+        <ul>
+            <li>
+              {% if not is_mobile %}
+              <span>Desktop</span>
+              {% else %}
+              <a href="/firefox/{{ version }}/releasenotes/">Desktop</a>
+              {% endif %}
+            </li>
+            <li>
+              {% if not is_mobile %}
+              <a href="/mobile/{{ version }}/releasenotes/">Mobile</a>
+              {% else %}
+              <span>Mobile</span>
+              {% endif %}
+            </li>
+        </ul>
+    </div>
+    <h2>
+        <img src="<?=$config['static_prefix']?>/img/covehead/firefox/beta/notes/title.png" alt="Firefox Beta" height="156" width="482" />
+        Notes <small>(First offered to Beta channel users on {{ release_date }})</small>
+    </h2>
+    {% if release_text %}{{ release_text }}{% endif %}
+    {% if product_text %}{{ product_text }}{% endif %}
+</div>
+
+<div id="main-content">
+
+    <section id="whatsnew">
+        <h3>What’s New</h3>
+        <div class="section-contents">
+            <ul>
+              {% for item in whats_new %}
+                <li>
+                    <span class="tag tag-{{ item[1]|lower }}">{{ item[1] }}</span>
+                    <!-- The description is the title for now -->
+                    <h5>{{ item[0] }}</h5>
+                    <!-- <p></p> -->
+                </li>
+              {% endfor %}
+
+
+              {% for item in fixed %}
+                <li>
+                    <span class="tag tag-fixed">FIXED</span>
+                    <h5>
+                      {{ item[1] }}
+                      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
+                    </h5>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section id="knownissues">
+        <h3>Known Issues</h3>
+        <div class="section-contents">
+            <ul>
+              {% for item in known_issues %}
+                <li>
+                    <span class="tag tag-{% if item[2] %}resolved{% else %}unresolved{% endif %}">
+                      {% if item[2] %}<a href="/{{ urls[item[2]] }}">Resolved in v{{ item[2] }}</a>{% else %}Unresolved{% endif %}
+                    </span>
+                    <h5>{{ item[1] }}</h5>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+</div><!-- end #main-content div -->
+
+<div id="sidebar">
+
+    <section id="try">
+        <h3>Try Firefox Beta</h3>
+        <ol>
+          <li id="try1">
+            <a href="{% if is_mobile %}/mobile/platforms/{% else %}/firefox/{{ version }}/system-requirements/{% endif %}">
+              Check »
+            </a>
+          </li>
+          <li id="try2">
+            <a href="/firefox/beta/">
+              Download »
+            </a>
+          </li>
+          {% if not is_mobile %}
+          <li id="try3"><a href="https://support.mozilla.com/en-US/kb/Installing%20Firefox">Install »</a></li>
+          <li id="try4"><a href="https://addons.mozilla.org/en-US/firefox/">Customize »</a></li>
+          {% endif %}
+        </ol>
+    </section>
+
+    <section id="get-involved">
+        <h3>Want to get involved?</h3>
+        <p>Did you know that most of the contention Firefox Support was written by volunteers?</p>
+        <a href="/contribute/">Find out more »</a>
+    </section>
+
+
+    <section id="problems">
+        <h3>Having Problems?</h3>
+        <ol>
+          <li><a href="http://support.mozilla.com/">Search for answers on the Firefox Support page »</a></li>
+          <li><a href="#knownissues">Look at the known issues list and see if we already know about the problem »</a></li>
+          <li><a href="https://bugzilla.mozilla.org/enter_bug.cgi">If you can’t find reference to your issue, please consider filing a technical bug report »</a></li>
+        </ol>
+    </section>
+
+
+    <section id="other">
+        <h3>Other Resources</h3>
+      <p><a href="https://developer.mozilla.org/en/Firefox_10_for_developers">Developer Information »</a></p>
+      <p><a href="https://blog.mozilla.com/futurereleases/">Future of Firefox Blog »</a></p>
+    </section>
+
+</div>
+
+<?php
+    @include_once "{$config['file_root']}/{$lang}/includes/footer.inc.php";
+?>
+
