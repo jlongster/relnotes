@@ -2,8 +2,9 @@
 
 import sys
 import sqlite3
-import jinja2
 import os
+from datetime import datetime
+import jinja2
 
 conn = sqlite3.connect('relnotes.sqlite')
 c = conn.cursor()
@@ -23,15 +24,33 @@ beta_suffix = 'beta'
 channel_info = {}
 
 def cache_channels():
-    c.execute('SELECT r.version, r.sub_version, c.channel_name FROM Releases r '
+    c.execute('SELECT r.version, r.sub_version, c.channel_name, p.product_name FROM Releases r '
               'LEFT JOIN Channels c ON c.id = r.channel '
-              'ORDER BY r.release_date ASC')
+              'LEFT JOIN Products p ON p.id = r.product '
+              'ORDER BY r.release_date DESC')
     data = c.fetchall()
 
     for record in data:
-        (version, sub_version, channel) = record
-        channel_info[channel] = {'version': version,
-                                 'sub_version': sub_version}
+        (version, sub_version, channel, product) = record
+        if channel not in channel_info:
+            channel_info[channel] = {'version': version,
+                                     'sub_version': sub_version}
+            
+        if ('desktop-url' not in channel_info[channel] or
+            'mobile-url' not in channel_info[channel]) :
+            relname = 'releasenotes'
+            version_text = '%s.%s' % (version, sub_version)
+            if channel == 'Aurora':
+                version_text = version_text + aurora_suffix
+                relname = 'auroranotes'
+            elif channel == 'Beta':
+                version_text = version_text + beta_suffix
+
+            if product == 'Firefox':
+                channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
+            else:
+                channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
+
 
 def publish_channel(product_name, channel_name):
     c.execute('SELECT id, product_text FROM Products WHERE product_name=? LIMIT 1', (product_name,))
@@ -80,22 +99,15 @@ def publish_channel(product_name, channel_name):
               (product_id, version, version, channel_id, version, version, channel_id))
     known_issues = c.fetchall()
 
-    for ch, vs in channel_info.iteritems():
-        relname = 'releasenotes'
-        version_text = '%s.%s' % (vs['version'], vs['sub_version'])
-        if ch == 'Aurora':
-            version_text = version_text + aurora_suffix
-            relname = 'auroranotes'
-        elif ch == 'Beta':
-            version_text = version_text + beta_suffix
+    version_text = '%s.%s' % (version, sub_version)
+    if channel_name == 'Aurora':
+        version_text = version_text + aurora_suffix
+    elif channel_name == 'Beta':
+        version_text = version_text + beta_suffix
 
-        if product == 'Firefox':
-            channel_info[ch]['url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
-        else:
-            channel_info[ch]['url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
-
-    out_dir = channel_info[channel_name]['url']
-    out_file = '%s/index.html' % channel_info[channel_name]['url']
+    is_mobile = (product_name == 'Firefox for mobile')
+    out_dir = channel_info[channel_name]['mobile-url' if is_mobile else 'desktop-url']
+    out_file = '%s/index.html' % out_dir
 
     try:
         os.makedirs(os.path.join(out_base, out_dir));
@@ -104,18 +116,24 @@ def publish_channel(product_name, channel_name):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
     tmpl = env.get_template(channel_name + '.html')
 
-    urls = dict([(i['version'],i['url']) for (ch,i) in channel_info.iteritems()])
+    versions = dict([(i['version'],i) for (ch,i) in channel_info.iteritems()])
+
+    rdate = datetime.strptime(release_date, "%Y-%m-%d")
+    release_date = datetime.strftime(rdate, "%B %d, %Y").replace(" 0", " ")
 
     with file(os.path.join(out_base, out_file), 'w') as f:
-        f.write(tmpl.render({'is_mobile': product_name == 'Firefox for mobile',
+        f.write(tmpl.render({'is_mobile': is_mobile,
                              'release_date': release_date,
-                             'version': version_text,
+                             'version_text': version_text,
+                             'version': version,
                              'whats_new': whats_new,
                              'fixed': fixed,
                              'known_issues': known_issues,
                              'release_text': release_text,
                              'product_text': product_text,
-                             'urls': urls}).encode('utf-8'))
+                             'versions': versions}).encode('utf-8'))
+
+    print 'Done: %s' % os.path.join(out_base, out_file)
 
 cache_channels()
 

@@ -30,12 +30,12 @@ EXTRA_HEADERS;
               {% if not is_mobile %}
               <span>Desktop</span>
               {% else %}
-              <a href="/firefox/{{ version }}/releasenotes/">Desktop</a>
+            <a href="/{{ versions[version]['desktop-url'] }}">Desktop</a>
               {% endif %}
             </li>
             <li>
               {% if not is_mobile %}
-              <a href="/mobile/{{ version }}/releasenotes/">Mobile</a>
+            <a href="/{{ versions[version]['mobile-url'] }}">Mobile</a>
               {% else %}
               <span>Mobile</span>
               {% endif %}
@@ -86,7 +86,19 @@ EXTRA_HEADERS;
               {% for item in known_issues %}
                 <li>
                     <span class="tag tag-{% if item[2] %}resolved{% else %}unresolved{% endif %}">
-                      {% if item[2] %}Resolved{% else %}Unresolved{% endif %}
+                      {% if item[2] %}
+                        {% if versions[item[2]] %}
+                          {% if is_mobile %}
+                             <a href="/{{ versions[item[2]]['mobile-url'] }}">
+                          {% else %}
+                             <a href="/{{ versions[item[2]]['desktop-url'] }}">
+                          {% endif %}
+                          Resolved in v{{ item[2] }}
+                        </a>
+                        {% else %}
+                        Resolved in v{{ item[2] }}
+                        {% endif %}
+                      {% else %}Unresolved{% endif %}
                     </span>
                     <h5>{{ item[1] }}</h5>
                 </li>
