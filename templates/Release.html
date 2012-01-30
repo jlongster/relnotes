@@ -85,22 +85,31 @@ EXTRA_HEADERS;
             <ul>
               {% for item in known_issues %}
                 <li>
-                    <span class="tag tag-{% if item[2] %}resolved{% else %}unresolved{% endif %}">
-                      {% if item[2] %}
-                        {% if versions[item[2]] %}
-                          {% if is_mobile %}
-                             <a href="/{{ versions[item[2]]['mobile-url'] }}">
-                          {% else %}
-                             <a href="/{{ versions[item[2]]['desktop-url'] }}">
-                          {% endif %}
-                          Resolved in v{{ item[2] }}
-                        </a>
-                        {% else %}
-                        Resolved in v{{ item[2] }}
-                        {% endif %}
-                      {% else %}Unresolved{% endif %}
+                    <span class="tag tag-unresolved">
+                        Unresolved
                     </span>
                     <h5>{{ item[1] }}</h5>
+
+                    {% if item[2] %}
+                    <div class="status">
+                      <span class="status-unresolved">
+                        Unresolved on v{{ item[4] }}
+                      </span>
+                      <span class="status-resolved">
+                        {% if versions[item[2]] %}
+                          {% if is_mobile %}
+                            <a href="/{{ versions[item[2]]['mobile-url'] }}">
+                          {% else %}
+                            <a href="/{{ versions[item[2]]['desktop-url'] }}">
+                          {% endif %}
+                          Resolved in v{{ item[2] }}
+                          </a>
+                        {% else %}
+                          Resolved in v{{ item[2] }}
+                        {% endif %}
+                      </span>
+                    </div>
+                    {% endif %}
                 </li>
               {% endfor %}
             </ul>
@@ -115,12 +124,12 @@ EXTRA_HEADERS;
         <h3>Try Firefox</h3>
         <ol>
           <li id="try1">
-            <a href="{% if is_mobile %}/mobile/platforms/{% else %}/firefox/{{ version }}/system-requirements/{% endif %}">
+            <a href="{% if is_mobile %}/mobile/platforms/{% else %}/firefox/{{ version_text }}/system-requirements/{% endif %}">
               Check »
             </a>
           </li>
           <li id="try2">
-            <a href="/firefox/beta/">
+            <a href="/firefox/">
               Download »
             </a>
           </li>

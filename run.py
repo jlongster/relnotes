@@ -86,7 +86,7 @@ def publish_channel(product_name, channel_name):
     fixed = c.fetchall()
 
     c.execute('SELECT Notes.bug_num, Notes.description, Notes.fixed_in_version, '
-              '  Notes.fixed_in_channel, Channels.channel_name FROM Notes '
+              '  Notes.fixed_in_channel, Notes.first_version, Channels.channel_name FROM Notes '
               'LEFT OUTER JOIN Channels ON Notes.fixed_in_channel=Channels.id '
               'WHERE bug_num IS NOT NULL AND '
               '(product IS NULL OR product=?) AND '

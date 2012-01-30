@@ -74,25 +74,31 @@ EXTRA_HEADERS;
             <ul>
               {% for item in known_issues %}
                 <li>
-                    <span class="tag tag-{% if item[2] %}resolved{% else %}unresolved{% endif %}">
-                      {% if item[2] %}
+                    <span class="tag tag-unresolved">
+                        Unresolved
+                    </span>
+                    <h5>{{ item[1] }}</h5>
+
+                    {% if item[2] %}
+                    <div class="status">
+                      <span class="status-unresolved">
+                        Unresolved on v{{ item[4] }}
+                      </span>
+                      <span class="status-resolved">
                         {% if versions[item[2]] %}
                           {% if is_mobile %}
-                             <a href="/{{ versions[item[2]]['mobile-url'] }}">
+                            <a href="/{{ versions[item[2]]['mobile-url'] }}">
                           {% else %}
-                             <a href="/{{ versions[item[2]]['desktop-url'] }}">
+                            <a href="/{{ versions[item[2]]['desktop-url'] }}">
                           {% endif %}
                           Resolved in v{{ item[2] }}
-                        </a>
+                          </a>
                         {% else %}
-                        Resolved in v{{ item[2] }}
+                          Resolved in v{{ item[2] }}
                         {% endif %}
-                      {% else %}Unresolved{% endif %}
-                    </span>
-                    <h5>
-                      {{ item[1] }}
-                      (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
-                    </h5>
+                      </span>
+                    </div>
+                    {% endif %}
                 </li>
               {% endfor %}
             </ul>
