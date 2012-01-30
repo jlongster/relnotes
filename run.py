@@ -19,7 +19,7 @@ if len(sys.argv) < 3:
 
 out_base = sys.argv[1]
 aurora_suffix = sys.argv[2]
-beta_suffix = 'beta'
+beta_suffix = ''
 
 channel_info = {}
 
@@ -99,14 +99,26 @@ def publish_channel(product_name, channel_name):
               (product_id, version, version, channel_id, version, version, channel_id))
     known_issues = c.fetchall()
 
-    version_text = '%s.%s' % (version, sub_version)
-    if channel_name == 'Aurora':
-        version_text = version_text + aurora_suffix
-    elif channel_name == 'Beta':
-        version_text = version_text + beta_suffix
-
     is_mobile = (product_name == 'Firefox for mobile')
-    out_dir = channel_info[channel_name]['mobile-url' if is_mobile else 'desktop-url']
+
+    relname = 'releasenotes'
+    version_text = '%s.%s' % (version, sub_version)
+    real_version_text = version_text
+
+    if channel == 'Aurora':
+        version_text = version_text + aurora_suffix
+        real_version_text = version_text
+        relname = 'auroranotes'
+    elif channel == 'Beta':
+        version_text = version_text + beta_suffix
+        real_version_text = version_text + 'beta'
+
+    if is_mobile:
+        out_dir = 'en-US/mobile/%s/%s' % (real_version_text, relname)
+    else:
+        out_dir = 'en-US/firefox/%s/%s' % (real_version_text, relname)
+        
+
     out_file = '%s/index.html' % out_dir
 
     try:
