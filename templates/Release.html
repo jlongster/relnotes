@@ -1,6 +1,6 @@
 <?php
-    $page_title = 'Firefox Beta Notes';
-    $body_id    = 'beta-notes';
+    $page_title = 'Firefox Notes';
+    $body_id    = 'firefox-notes';
 $fonts = <<<FONTS
     <style>
     @font-face {
@@ -16,7 +16,7 @@ FONTS;
 
     $extra_headers = <<<EXTRA_HEADERS
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/beta-notes.css" media="screen" />
+    <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/firefox-notes.css" media="screen" />
 EXTRA_HEADERS;
     include_once "{$config['file_root']}/{$lang}/includes/header.inc.php";
 
@@ -43,8 +43,8 @@ EXTRA_HEADERS;
         </ul>
     </div>
     <h2>
-        <img src="<?=$config['static_prefix']?>/img/covehead/firefox/beta/notes/title.png" alt="Firefox Beta" height="156" width="482" />
-        Notes <small>(First offered to Beta channel users on {{ release_date }})</small>
+        <img src="<?=$config['static_prefix']?>/img/covehead/firefox/notes/title.png" alt="Firefox" />
+        Notes <small>(First offered to release channel users on {{ release_date }})</small>
     </h2>
     {% if release_text %}{{ release_text }}{% endif %}
     {% if product_text %}{{ product_text }}{% endif %}
@@ -112,7 +112,7 @@ EXTRA_HEADERS;
 <div id="sidebar">
 
     <section id="try">
-        <h3>Try Firefox Beta</h3>
+        <h3>Try Firefox</h3>
         <ol>
           <li id="try1">
             <a href="{% if is_mobile %}/mobile/platforms/{% else %}/firefox/{{ version }}/system-requirements/{% endif %}">
