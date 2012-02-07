@@ -1,5 +1,9 @@
 <?php
-    $page_title = 'Firefox Beta Notes';
+    {% if not is_mobile %}
+    $page_title = 'Firefox Beta Notes - Desktop';
+    {% else %}
+    $page_title = 'Firefox Beta Notes - Mobile';
+    {% endif %}
     $body_id    = 'beta-notes';
 $fonts = <<<FONTS
     <style>
