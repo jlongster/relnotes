@@ -1,5 +1,9 @@
 <?php
-    $page_title = 'Firefox Aurora Notes';
+    {% if not is_mobile %}
+    $page_title = 'Firefox Aurora Notes - Desktop';
+    {% else %}
+    $page_title = 'Firefox Aurora Notes - Mobile';
+    {% endif %}
     $body_id    = 'aurora-relnotes';
     $body_class = 'darkbg';
 
