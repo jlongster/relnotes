@@ -39,8 +39,13 @@ def cache_channels():
         if ('desktop-url' not in channel_info[channel] or
             'mobile-url' not in channel_info[channel]) :
             relname = 'releasenotes'
-            version_text = '%s.%s' % (version, sub_version)
-            if channel == 'Aurora':
+            
+	    version_text = '%s.0' % version
+
+	    if sub_version != 0:
+	        version_text += '.%s' % sub_version
+	    
+	    if channel == 'Aurora':
                 version_text = version_text + aurora_suffix
                 relname = 'auroranotes'
             elif channel == 'Beta':
@@ -102,7 +107,11 @@ def publish_channel(product_name, channel_name):
     is_mobile = (product_name == 'Firefox for mobile')
 
     relname = 'releasenotes'
-    version_text = '%s.%s' % (version, sub_version)
+    version_text = '%s.0' % version
+
+    if sub_version != 0:
+	    version_text += '.%s' % sub_version
+
     real_version_text = version_text
 
     if channel == 'Aurora':
