@@ -9,16 +9,18 @@ import jinja2
 conn = sqlite3.connect('relnotes.sqlite')
 c = conn.cursor()
 
-products = ['Firefox', 'Firefox for mobile']
-channels = ['Aurora', 'Beta', 'Release']
+PRODUCTS = ['Firefox', 'Firefox for mobile']
+ESR_PRODUCTS = ['Firefox ESR']
 
-if len(sys.argv) < 3:
-    print ('Usage: %s <out_base> <aurora_suffix>\n\n'
-           'Example: %s /home/mozilla.com a2' % (sys.argv[0], sys.argv[0]))
+if len(sys.argv) < 4:
+    print ('Usage: %s <out_base> <channel_1,channel_2> <aurora_suffix>\n\n'
+           'Example: %s /home/mozilla.com Aurora,Beta,Release,ESR a2' % (sys.argv[0], sys.argv[0]))
     sys.exit(1)
 
 out_base = sys.argv[1]
-aurora_suffix = sys.argv[2]
+channels = sys.argv[2].split(',')
+aurora_suffix = sys.argv[3]
+esr_suffix = 'esr'
 beta_suffix = ''
 
 channel_info = {}
@@ -48,13 +50,15 @@ def cache_channels():
 	    if channel == 'Aurora':
                 version_text = version_text + aurora_suffix
                 relname = 'auroranotes'
-            elif channel == 'Beta':
-                version_text = version_text + beta_suffix
-
-            if product == 'Firefox':
-                channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
-            else:
-                channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
+        elif channel == 'Beta':
+            version_text = version_text + beta_suffix
+        elif channel == 'ESR':
+            version_text = version_text + esr_suffix
+            
+        if product == 'Firefox':
+            channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
+        else:
+            channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
 
 
 def publish_channel(product_name, channel_name):
@@ -70,8 +74,19 @@ def publish_channel(product_name, channel_name):
               'ORDER BY release_date DESC LIMIT 1',
               (product_id, channel_id))
     (version, sub_version, release_date, release_text) = c.fetchone() or (None, None, None, None)
-
-    c.execute('SELECT Notes.description, Tags.tag_text FROM Notes '
+    
+    # for esr we just want the security fixes per subversion
+    if channel_name == 'ESR':
+        c.execute('SELECT Notes.description, Tags.tag_text FROM Notes '
+              'LEFT OUTER JOIN Tags ON Notes.tag=Tags.id '
+              'WHERE bug_num IS NULL AND '
+              '(product IS NULL OR product=?) AND '
+              'fixed_in_subversion=? AND '
+              '(fixed_in_channel=?) '
+              'ORDER BY Tags.sort_num ASC, Notes.sort_num DESC',
+              (product_id, sub_version, channel_id))
+    else:
+        c.execute('SELECT Notes.description, Tags.tag_text FROM Notes '
               'LEFT OUTER JOIN Tags ON Notes.tag=Tags.id '
               'WHERE bug_num IS NULL AND '
               '(product IS NULL OR product=?) AND '
@@ -121,6 +136,11 @@ def publish_channel(product_name, channel_name):
     elif channel == 'Beta':
         version_text = version_text + beta_suffix
         real_version_text = version_text + 'beta'
+    elif channel == 'ESR':
+        version_text = version_text + esr_suffix
+        real_version_text = version_text
+        relname = 'releasenotes'
+        is_mobile = False
 
     if is_mobile:
         out_dir = 'en-US/mobile/%s/%s' % (real_version_text, relname)
@@ -158,6 +178,11 @@ def publish_channel(product_name, channel_name):
 
 cache_channels()
 
-for product in products:
-    for channel in channels:
-        publish_channel(product, channel)
+for channel in channels:
+    if channel == 'ESR':
+        for product in ESR_PRODUCTS:
+            publish_channel(product, channel)
+    else:
+        for product in PRODUCTS:
+            publish_channel(product, channel)    
+    

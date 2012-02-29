@@ -1,0 +1,129 @@
+<?php
+    $page_title = 'Firefox ESR Notes - Desktop';
+    $body_id    = 'esr-relnotes';
+$fonts = <<<FONTS
+    <style>
+    @font-face {
+        font-family: 'MuseoSans';
+        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot');
+        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot?iefix') format('eot'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.woff') format('woff'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.svg#webfont') format('svg');
+    }
+    </style>
+FONTS;
+
+    $extra_headers = <<<EXTRA_HEADERS
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/firefox-notes.css" media="screen" />
+EXTRA_HEADERS;
+    include_once "{$config['file_root']}/{$lang}/includes/header.inc.php";
+
+?>
+
+<div id="main-feature">
+    <h2>
+        <img src="<?=$config['static_prefix']?>/img/covehead/firefox-esr/notes/title.png" alt="Firefox ESR" />
+        Notes <small>(First offered to Firefox ESR channel users on {{ release_date }})</small>
+    </h2>
+    {% if release_text %}{{ release_text }}{% endif %}
+    {% if product_text %}{{ product_text }}{% endif %}
+
+    If interested, please see the
+    <a href="/en-US/firefox/{{ version_text }}/esrnotes/buglist.html">complete list of changes</a>
+    in this release.
+</div>
+
+<div id="main-content">
+
+    <section id="whatsnew">
+        <h3>What’s New</h3>
+        <div class="section-contents">
+            <ul>
+              {% for item in whats_new %}
+                <li>
+                    <span class="tag tag-{{ item[1]|lower }}">{{ item[1] }}</span>
+                    <!-- The description is the title for now -->
+                    <h5>{{ item[0] }}</h5>
+                    <!-- <p></p> -->
+                </li>
+              {% endfor %}
+
+
+              {% for item in fixed %}
+                <li>
+                    <span class="tag tag-fixed">FIXED</span>
+                    <h5>
+                      {{ item[1] }}
+                      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
+                    </h5>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section id="knownissues">
+        <h3>Known Issues</h3>
+        <div class="section-contents">
+            <ul>
+              {% for item in known_issues %}
+                <li>
+                    <span class="tag tag-unresolved">
+                        Unresolved
+                    </span>
+		    <h5>{{ item[1] }} (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)</h5>
+
+                    {% if item[2] %}
+                    <div class="status">
+                      <span class="status-unresolved">
+                        Unresolved on v{{ item[4] }}
+                      </span>
+                      <span class="status-resolved">
+                        {% if versions[item[2]] %}
+                          Resolved in v{{ item[2] }}
+                        {% endif %}
+                      </span>
+                    </div>
+                    {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+</div><!-- end #main-content div -->
+
+<div id="sidebar">
+
+
+    <section id="get-involved">
+        <h3>Want to get involved?</h3>
+        <p>Did you know that most of the content in Firefox Support was written by volunteers?</p>
+        <a href="/contribute/">Find out more »</a>
+    </section>
+
+
+    <section id="problems">
+        <h3>Having Problems?</h3>
+        <ol>
+          <li><a href="http://support.mozilla.com/">Search for answers on the Firefox Support page »</a></li>
+          <li><a href="#knownissues">Look at the known issues list and see if we already know about the problem »</a></li>
+          <li><a href="https://bugzilla.mozilla.org/enter_bug.cgi">If you can’t find reference to your issue, please consider filing a technical bug report »</a></li>
+        </ol>
+    </section>
+
+
+    <section id="other">
+        <h3>Other Resources</h3>
+      <p><a href="http://www.mozilla.org/en-US/firefox/organizations/">Information for Organizations »</a></p>
+      <p><a href="https://blog.mozilla.com/futurereleases/">Future of Firefox Blog »</a></p>
+    </section>
+
+</div>
+
+<?php
+    @include_once "{$config['file_root']}/{$lang}/includes/footer.inc.php";
+?>
+
