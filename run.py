@@ -1,31 +1,24 @@
 #!/usr/bin/env python
+#!/usr/bin/env python
+"""%prog [-o|--output-dir] [-c|--channels] [--aurora-suffix] [--beta-suffix] [--esr-suffix]
 
+"""
+from argparse import ArgumentParser
 import sys
 import sqlite3
 import os
 from datetime import datetime
 import jinja2
 
-conn = sqlite3.connect('relnotes.sqlite')
-c = conn.cursor()
-
+DEFAULT_CHANNELS = ['Aurora', 'Beta', 'Release']
 PRODUCTS = ['Firefox', 'Firefox for mobile']
 ESR_PRODUCTS = ['Firefox ESR']
 
-if len(sys.argv) < 4:
-    print ('Usage: %s <out_base> <channel_1,channel_2> <aurora_suffix>\n\n'
-           'Example: %s /home/mozilla.com Aurora,Beta,Release,ESR a2' % (sys.argv[0], sys.argv[0]))
-    sys.exit(1)
+conn = sqlite3.connect('relnotes.sqlite')
+c = conn.cursor()
+channel_info = {}  
 
-out_base = sys.argv[1]
-channels = sys.argv[2].split(',')
-aurora_suffix = sys.argv[3]
-esr_suffix = 'esr'
-beta_suffix = ''
-
-channel_info = {}
-
-def cache_channels():
+def cache_channels(aurora_suffix, beta_suffix, esr_suffix):
     c.execute('SELECT r.version, r.sub_version, c.channel_name, p.product_name FROM Releases r '
               'LEFT JOIN Channels c ON c.id = r.channel '
               'LEFT JOIN Products p ON p.id = r.product '
@@ -61,7 +54,7 @@ def cache_channels():
             channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
 
 
-def publish_channel(product_name, channel_name):
+def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_suffix, esr_suffix):
     c.execute('SELECT id, product_text FROM Products WHERE product_name=? LIMIT 1', (product_name,))
     (product_id, product_text) = c.fetchone()
 
@@ -176,13 +169,50 @@ def publish_channel(product_name, channel_name):
 
     print 'Done: %s' % os.path.join(out_base, out_file)
 
-cache_channels()
+if __name__ == '__main__':
+    parser = ArgumentParser(__doc__)
+    parser.set_defaults(
+        output_dir=None,
+        channels=DEFAULT_CHANNELS,
+        aurora_suffix=None,
+        beta_suffix='',
+        esr_suffix='',
+        )
+    parser.add_argument("-o", "--output-dir", dest="output_dir",
+            help="specify a location for the generated files to be written to")
+    parser.add_argument("-c", "--channels", dest="channels",
+            help="comma-separated string of channels to create notes for")
+    parser.add_argument("--aurora-suffix", dest="aurora_suffix",
+            help="specify a specific suffix for aurora release")
+    parser.add_argument("--beta-suffix", dest="beta_suffix",
+            help="specify a specific suffix for beta release")
+    parser.add_argument("--esr-suffix", dest="esr_suffix",
+            help="specify a specific suffix for esr releases")
 
-for channel in channels:
-    if channel == 'ESR':
-        for product in ESR_PRODUCTS:
-            publish_channel(product, channel)
-    else:
-        for product in PRODUCTS:
-            publish_channel(product, channel)    
+    options, args = parser.parse_known_args()
+
+    if options.output_dir == None:
+        parser.error("Need to provide an output location")
+    
+    channels = options.channels.split(',')
+    
+    for channel in channels:
+        if channel not in DEFAULT_CHANNELS and channel != 'ESR':
+            channels.remove(channel)
+        if channel == 'Aurora' and options.aurora_suffix == None:
+            parser.error("Need to provide an Aurora suffix")
+
+    cache_channels(options.aurora_suffix, options.beta_suffix, options.esr_suffix)
+    
+    for channel in channels:
+        if channel == 'ESR':
+            for product in ESR_PRODUCTS:
+                publish_channel(product, channel, 
+                    options.output_dir, options.aurora_suffix, 
+                    options.beta_suffix, options.esr_suffix)
+        else:
+            for product in PRODUCTS:
+                publish_channel(product, channel, 
+                    options.output_dir, options.aurora_suffix, 
+                    options.beta_suffix, options.esr_suffix)    
     
