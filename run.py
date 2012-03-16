@@ -34,25 +34,28 @@ def cache_channels(aurora_suffix, beta_suffix, esr_suffix):
         if ('desktop-url' not in channel_info[channel] or
             'mobile-url' not in channel_info[channel]) :
             relname = 'releasenotes'
+            version_text = '%s.0' % version
+    
+            if sub_version != 0:
+                version_text += '.%s' % sub_version
             
-	    version_text = '%s.0' % version
-
-	    if sub_version != 0:
-	        version_text += '.%s' % sub_version
-	    
-	    if channel == 'Aurora':
-                version_text = version_text + aurora_suffix
-                relname = 'auroranotes'
-        elif channel == 'Beta':
-            version_text = version_text + beta_suffix
-        elif channel == 'ESR':
-            version_text = version_text + esr_suffix
+            if channel == 'Aurora':
+                    version_text = version_text + aurora_suffix
+                    relname = 'auroranotes'
+            elif channel == 'Beta':
+                version_text = version_text + beta_suffix
+            elif channel == 'ESR':
+                version_text = version_text + esr_suffix
             
-        if product == 'Firefox':
-            channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
-        else:
-            channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
-
+            if product == 'Firefox ESR':
+                channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
+            else:
+                channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
+                
+            if product == 'Firefox':
+                channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
+            else:
+                channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
 
 def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_suffix, esr_suffix):
     c.execute('SELECT id, product_text FROM Products WHERE product_name=? LIMIT 1', (product_name,))
@@ -128,7 +131,7 @@ def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_su
         relname = 'auroranotes'
     elif channel == 'Beta':
         version_text = version_text + beta_suffix
-        real_version_text = version_text + 'beta'
+        real_version_text = version_text
     elif channel == 'ESR':
         version_text = version_text + esr_suffix
         real_version_text = version_text

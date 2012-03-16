@@ -137,13 +137,13 @@ EXTRA_HEADERS;
             </a>
           </li>
           <li id="try2">
-            <a href="/mobile/">
+            <a href="/{% if is_mobile %}mobile{% else %}firefox{% endif %}/">
               Download »
             </a>
           </li>
           {% if not is_mobile %}
-          <li id="try3"><a href="https://support.mozilla.com/en-US/kb/Installing%20Firefox">Install »</a></li>
-          <li id="try4"><a href="https://addons.mozilla.org/en-US/firefox/">Customize »</a></li>
+          <li id="try3"><a href="https://support.mozilla.org/kb/Installing%20Firefox">Install »</a></li>
+          <li id="try4"><a href="https://addons.mozilla.org/firefox/">Customize »</a></li>
           {% endif %}
         </ol>
     </section>
@@ -158,7 +158,7 @@ EXTRA_HEADERS;
     <section id="problems">
         <h3>Having Problems?</h3>
         <ol>
-          <li><a href="http://support.mozilla.com/">Search for answers on the Firefox Support page »</a></li>
+          <li><a href="http://support.mozilla.org/">Search for answers on the Firefox Support page »</a></li>
           <li><a href="#knownissues">Look at the known issues list and see if we already know about the problem »</a></li>
           <li><a href="https://bugzilla.mozilla.org/enter_bug.cgi">If you can’t find reference to your issue, please consider filing a technical bug report »</a></li>
         </ol>
