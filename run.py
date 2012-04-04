@@ -92,6 +92,7 @@ def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_su
               (product_id, version, channel_id))
     whats_new = c.fetchall()
 
+    # TODO to fix this for being able to create release notes earlier
     c.execute('SELECT bug_num,description FROM Notes '
               'WHERE bug_num IS NOT NULL AND '
               '(product IS NULL OR product=?) AND '
@@ -114,6 +115,8 @@ def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_su
               'ORDER BY sort_num DESC',
               (product_id, version, version, channel_id, version, version, channel_id))
     known_issues = c.fetchall()
+    
+    # TODO - Integrating the different release's WN and FR pages into the output
 
     is_mobile = (product_name == 'Firefox for mobile')
 
