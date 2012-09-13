@@ -34,12 +34,12 @@ EXTRA_HEADERS;
               {% if not is_mobile %}
               <span>Desktop</span>
               {% else %}
-            <a href="/{{ versions[version]['desktop-url'] }}">Desktop</a>
+            <a href="/firefox/{{ version_text }}/releasenotes/">Desktop</a>
               {% endif %}
             </li>
             <li>
               {% if not is_mobile %}
-            <a href="/{{ versions[version]['mobile-url'] }}">Mobile</a>
+	      <a href="/mobile/{{ version_text }}/releasenotes/">Mobile</a>
               {% else %}
               <span>Mobile</span>
               {% endif %}
@@ -48,7 +48,7 @@ EXTRA_HEADERS;
     </div>
     <h2>
         <img src="<?=$config['static_prefix']?>/img/covehead/firefox/beta/notes/title.png" alt="Firefox Beta" height="156" width="482" />
-        Notes <small>(First offered to Beta channel users on {{ release_date }})</small>
+	{% if not is_mobile %}Desktop{% else %}Mobile{% endif %} Notes <small>(First offered to Beta channel users on {{ release_date }})</small>
     </h2>
     {% if release_text %}{{ release_text }}{% endif %}
     {% if product_text %}{{ product_text }}{% endif %}

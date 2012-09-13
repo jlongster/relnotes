@@ -38,7 +38,7 @@ def cache_channels(aurora_suffix, beta_suffix, esr_suffix):
     
             if sub_version != 0:
                 version_text += '.%s' % sub_version
-            
+
             if channel == 'Aurora':
                     version_text = version_text + aurora_suffix
                     relname = 'auroranotes'
@@ -46,7 +46,7 @@ def cache_channels(aurora_suffix, beta_suffix, esr_suffix):
                 version_text = version_text + beta_suffix
             elif channel == 'ESR':
                 version_text = version_text + esr_suffix
-            
+           
             if product == 'Firefox ESR':
                 channel_info[channel]['desktop-url'] = 'en-US/firefox/%s/%s' % (version_text, relname)
             else:
@@ -180,8 +180,8 @@ if __name__ == '__main__':
     parser.set_defaults(
         output_dir=None,
         channels=DEFAULT_CHANNELS,
-        aurora_suffix=None,
-        beta_suffix='',
+        aurora_suffix='a2',
+        beta_suffix='beta',
         esr_suffix='',
         )
     parser.add_argument("-o", "--output-dir", dest="output_dir",
