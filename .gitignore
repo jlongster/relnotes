@@ -1,3 +1,8 @@
+.dropbox
+run.py~
+templates/Beta.html~
+templates/ESR.html~
+testsite/
 *.pyc
 relnotes.sqlite
 out.html
