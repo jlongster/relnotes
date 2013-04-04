@@ -54,7 +54,7 @@ EXTRA_HEADERS;
     {% if product_text %}{{ product_text }}{% endif %}
 
     If interested, please see the
-    <a href="/{{ versions[version]['desktop-url'] }}/buglist.html">complete list of changes</a>
+    <a href="https://bugzilla.mozilla.org/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f1=target_milestone&f2=cf_status_firefox{{ version }}&o1=anywords&o2=anywords&resolution=FIXED&v1=mozilla{{ version }}%2C%20Firefox%20{{ version }}&v2=fixed%2Cverified&order=bug_id&limit=0">complete list of changes</a>
     in this release.
 </div>
 
@@ -83,6 +83,11 @@ EXTRA_HEADERS;
                     </h5>
                 </li>
               {% endfor %}
+                <li><span class="tag tag-fixed">FIXED</span>
+                  <!-- The description is the title for now -->
+                  <h5>{{ version_text }}: Security fixes can be found <a href="https://www.mozilla.org/security/known-vulnerabilities/firefox.html">here</a></h5>
+                  <!-- <p></p> -->
+                </li>
             </ul>
         </div>
     </section>
@@ -120,11 +125,6 @@ EXTRA_HEADERS;
                     {% endif %}
                 </li>
               {% endfor %}
-              <li><span class="tag tag-fixed">FIXED</span>
-                  <!-- The description is the title for now -->
-                <h5>{{ version_text }}: Security fixes can be found <a href="https://www.mozilla.org/security/known-vulnerabilities/firefox.html">here</a></h5>
-                  <!-- <p></p> -->
-              </li>
             </ul>
         </div>
     </section>
