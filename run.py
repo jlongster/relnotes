@@ -5,23 +5,32 @@
 """
 from argparse import ArgumentParser
 import sys
-import sqlite3
+import psycopg2
 import os
 from datetime import datetime
 import jinja2
+from secrets import *
 
 DEFAULT_CHANNELS = ['Aurora', 'Beta', 'Release']
 PRODUCTS = ['Firefox', 'Firefox for mobile']
 ESR_PRODUCTS = ['Firefox ESR']
 
-conn = sqlite3.connect('relnotes.sqlite')
+#Define our connection string
+conn_string = "host='%s' dbname='%s' user='%s' password='%s'" % (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD)
+ 
+# print the connection string we will use to connect
+print "Connecting to database\n ->%s" % (conn_string)
+ 
+# get a connection, if a connect cannot be made an exception will be raised here
+conn = psycopg2.connect(conn_string)
+
 c = conn.cursor()
 channel_info = {}  
 
 def cache_channels(aurora_suffix, beta_suffix, esr_suffix):
-    c.execute('SELECT r.version, r.sub_version, c.channel_name, p.product_name FROM Releases r '
-              'LEFT JOIN Channels c ON c.id = r.channel '
-              'LEFT JOIN Products p ON p.id = r.product '
+    c.execute('SELECT r.version, r.sub_version, c.channel_name, p.product_name FROM "Releases" r '
+              'LEFT JOIN "Channels" c ON c.id = r.channel '
+              'LEFT JOIN "Products" p ON p.id = r.product '
               'ORDER BY r.release_date DESC')
     data = c.fetchall()
 
@@ -58,60 +67,60 @@ def cache_channels(aurora_suffix, beta_suffix, esr_suffix):
                 channel_info[channel]['mobile-url'] = 'en-US/mobile/%s/%s' % (version_text, relname)
 
 def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_suffix, esr_suffix):
-    c.execute('SELECT id, product_text FROM Products WHERE product_name=? LIMIT 1', (product_name,))
+    c.execute('SELECT id, product_text FROM "Products" WHERE product_name=%s LIMIT 1', (product_name,))
     (product_id, product_text) = c.fetchone()
 
-    c.execute('SELECT id FROM Channels WHERE channel_name=? LIMIT 1',
+    c.execute('SELECT id FROM "Channels" WHERE channel_name=%s LIMIT 1',
               (channel_name,))
     (channel_id,) = c.fetchone() or (None,)
 
-    c.execute('SELECT version, sub_version, release_date, release_text FROM Releases '
-              'WHERE product=? AND channel=? '
+    c.execute('SELECT version, sub_version, release_date, release_text FROM "Releases" '
+              'WHERE product=%s AND channel=%s '
               'ORDER BY release_date DESC LIMIT 1',
               (product_id, channel_id))
     (version, sub_version, release_date, release_text) = c.fetchone() or (None, None, None, None)
     
     # for esr we just want the security fixes per subversion
     if channel_name == 'ESR':
-        c.execute('SELECT Notes.description, Tags.tag_text FROM Notes '
-              'LEFT OUTER JOIN Tags ON Notes.tag=Tags.id '
+        c.execute('SELECT n.description, t.tag_text FROM "Notes" n '
+              'LEFT OUTER JOIN "Tags" t ON n.tag=t.id '
               'WHERE bug_num IS NULL AND '
-              '(product IS NULL OR product=?) AND '
-              'fixed_in_subversion=? AND '
-              '(fixed_in_channel=?) '
-              'ORDER BY Tags.sort_num ASC, Notes.sort_num DESC',
+              '(product IS NULL OR product=%s) AND '
+              'fixed_in_subversion=%s AND '
+              '(fixed_in_channel=%s) '
+              'ORDER BY t.sort_num ASC, n.sort_num DESC',
               (product_id, sub_version, channel_id))
     else:
-        c.execute('SELECT Notes.description, Tags.tag_text FROM Notes '
-              'LEFT OUTER JOIN Tags ON Notes.tag=Tags.id '
+        c.execute('SELECT n.description, t.tag_text FROM "Notes" n '
+              'LEFT OUTER JOIN "Tags" t ON n.tag=t.id '
               'WHERE bug_num IS NULL AND '
-              '(product IS NULL OR product=?) AND '
-              'fixed_in_version=? AND '
-              '(fixed_in_channel IS NULL OR fixed_in_channel<=?) '
-              'ORDER BY Tags.sort_num ASC, Notes.sort_num DESC',
+              '(product IS NULL OR product=%s) AND '
+              'fixed_in_version=%s AND '
+              '(fixed_in_channel IS NULL OR fixed_in_channel<=%s) '
+              'ORDER BY t.sort_num ASC, n.sort_num DESC',
               (product_id, version, channel_id))
     whats_new = c.fetchall()
 
     # TODO to fix this for being able to create release notes earlier
-    c.execute('SELECT bug_num,description FROM Notes '
+    c.execute('SELECT bug_num,description FROM "Notes" '
               'WHERE bug_num IS NOT NULL AND '
-              '(product IS NULL OR product=?) AND '
-              'fixed_in_version=? AND '
-              '(fixed_in_channel IS NULL OR fixed_in_channel<=?) '
+              '(product IS NULL OR product=%s) AND '
+              'fixed_in_version=%s AND '
+              '(fixed_in_channel IS NULL OR fixed_in_channel<=%s) '
               'ORDER BY sort_num DESC',
               (product_id, version, channel_id))
     fixed = c.fetchall()
 
-    c.execute('SELECT Notes.bug_num, Notes.description, Notes.fixed_in_version, '
-              '  Notes.fixed_in_channel, Notes.first_version, Channels.channel_name FROM Notes '
-              'LEFT OUTER JOIN Channels ON Notes.fixed_in_channel=Channels.id '
+    c.execute('SELECT n.bug_num, n.description, n.fixed_in_version, '
+              '  n.fixed_in_channel, n.first_version, c.channel_name FROM "Notes" n '
+              'LEFT OUTER JOIN "Channels" c ON n.fixed_in_channel=c.id '
               'WHERE bug_num IS NOT NULL AND '
-              '(product IS NULL OR product=?) AND '
-              '(first_version<? OR '
-              '  (first_version=? AND '
-              '    (first_channel IS NULL OR first_channel<=?))) AND '
-              '(fixed_in_version IS NULL OR fixed_in_version>? OR '
-              '  (fixed_in_version=? AND fixed_in_channel>?)) '
+              '(product IS NULL OR product=%s) AND '
+              '(first_version<%s OR '
+              '  (first_version=%s AND '
+              '    (first_channel IS NULL OR first_channel<=%s))) AND '
+              '(fixed_in_version IS NULL OR fixed_in_version>%s OR '
+              '  (fixed_in_version=%s AND fixed_in_channel>%s)) '
               'ORDER BY sort_num DESC',
               (product_id, version, version, channel_id, version, version, channel_id))
     known_issues = c.fetchall()
@@ -158,8 +167,7 @@ def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_su
 
     versions = dict([(i['version'],i) for (ch,i) in channel_info.iteritems()])
 
-    rdate = datetime.strptime(release_date, "%Y-%m-%d")
-    release_date = datetime.strftime(rdate, "%B %d, %Y").replace(" 0", " ")
+    release_date = release_date.strftime("%B %d, %Y").replace(" 0", " ")
 
     with file(os.path.join(out_base, out_file), 'w') as f:
         f.write(tmpl.render({'is_mobile': is_mobile,
