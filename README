@@ -2,7 +2,7 @@ The `run.py` script generates the release notes page for Release, Aurora, Beta, 
 
 Instructions:
 
-1. Make sure you have the `relnotes.sqlite` database file in the root of this project.
+1. Make sure you have the connection information for the postgres database shared by release management.
 2. Install the requirements (`pip install -r requirements/compiled.txt`)
 3. Run `python run.py -o <output dir> -c [channels,] --{aurora,beta,esr}-suffix <suffix>`
 
