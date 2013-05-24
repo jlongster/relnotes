@@ -11,17 +11,11 @@ from datetime import datetime
 import jinja2
 from secrets import *
 
-DEFAULT_CHANNELS = ['Aurora', 'Beta', 'Release']
+DEFAULT_CHANNELS = "Aurora,Beta,Release"
 PRODUCTS = ['Firefox', 'Firefox for mobile']
 ESR_PRODUCTS = ['Firefox ESR']
 
-#Define our connection string
 conn_string = "host='%s' dbname='%s' user='%s' password='%s'" % (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD)
- 
-# print the connection string we will use to connect
-print "Connecting to database\n ->%s" % (conn_string)
- 
-# get a connection, if a connect cannot be made an exception will be raised here
 conn = psycopg2.connect(conn_string)
 
 c = conn.cursor()
@@ -100,7 +94,7 @@ def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_su
               'ORDER BY t.sort_num ASC, n.sort_num DESC',
               (product_id, version, channel_id))
     whats_new = c.fetchall()
-
+    
     # TODO to fix this for being able to create release notes earlier
     c.execute('SELECT bug_num,description FROM "Notes" '
               'WHERE bug_num IS NOT NULL AND '
