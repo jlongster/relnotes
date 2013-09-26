@@ -96,6 +96,7 @@ def publish_channel(product_name, channel_name, out_base, aurora_suffix, beta_su
     whats_new = c.fetchall()
     
     # TODO to fix this for being able to create release notes earlier
+    # TODO get "Fixed" based on tag, not on bug num so we can put more bug num in db
     c.execute('SELECT bug_num,description FROM "Notes" '
               'WHERE bug_num IS NOT NULL AND '
               '(product IS NULL OR product=%s) AND '

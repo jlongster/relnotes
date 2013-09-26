@@ -50,8 +50,9 @@ EXTRA_HEADERS;
         <img src="<?=$config['static_prefix']?>/img/covehead/firefox/notes/title.png" alt="Firefox" />
         Notes <small>(First offered to release channel users on {{ release_date }})</small>
     </h2>
-    {% if release_text %}{{ release_text }}{% endif %}
+
     {% if product_text %}{{ product_text }}{% endif %}
+    {% if release_text %}{{ release_text }}{% endif %}
 
     If interested, please see the
     <a href="https://bugzilla.mozilla.org/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f1=target_milestone&f2=cf_status_firefox{{ version }}&o1=anywords&o2=anywords&resolution=FIXED&v1=mozilla{{ version }}%2C%20Firefox%20{{ version }}&v2=fixed%2Cverified&order=bug_id&limit=0">complete list of changes</a>
