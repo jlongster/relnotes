@@ -1,0 +1,145 @@
+<?php
+    $page_title = 'Firefox OS Notes';
+    $body_id    = 'firefox-notes';
+$fonts = <<<FONTS
+    <style>
+    @font-face {
+        font-family: 'MuseoSans';
+        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot');
+        src: url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.eot?iefix') format('eot'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.woff') format('woff'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.ttf') format('truetype'),
+             url('{$config['static_prefix']}/img/fonts/MuseoSans_500-webfont.svg#webfont') format('svg');
+    }
+    </style>
+FONTS;
+
+    $extra_headers = <<<EXTRA_HEADERS
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/firefox-notes.css" media="screen" />
+EXTRA_HEADERS;
+    include_once "{$config['file_root']}/{$lang}/includes/header.inc.php";
+
+?>
+
+<div id="main-feature">
+    <h2>
+        <img src="<?=$config['static_prefix']?>/img/covehead/firefox/notes/title.png" alt="Firefox" />
+        Notes <small>(First offered to release channel users on {{ release_date }})</small>
+    </h2>
+    {% if release_text %}{{ release_text }}{% endif %}
+    {% if product_text %}{{ product_text }}{% endif %}
+
+</div>
+
+<div id="main-content">
+
+    <section id="whatsnew">
+        <h3>What’s New</h3>
+        <div class="section-contents">
+            <ul>
+              {% for item in whats_new %}
+                <li>
+                    <span class="tag tag-{{ item[1]|lower }}">{{ item[1] }}</span>
+                    <!-- The description is the title for now -->
+                    <h5>{{ item[0] }}</h5>
+                    <!-- <p></p> -->
+                </li>
+              {% endfor %}
+
+
+              {% for item in fixed %}
+                <li>
+                    <span class="tag tag-fixed">FIXED</span>
+                    <h5>
+                      {{ item[1] }}
+                      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)
+                    </h5>
+                </li>
+              {% endfor %}
+                <li><span class="tag tag-fixed">FIXED</span>
+                  <!-- The description is the title for now -->
+                  <h5>{{ version_text }}: Security fixes can be found <a href="https://www.mozilla.org/security/known-vulnerabilities/firefox.html">here</a></h5>
+                  <!-- <p></p> -->
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="knownissues">
+        <h3>Known Issues</h3>
+        <div class="section-contents">
+            <ul>
+              {% for item in known_issues %}
+                <li>
+                    <span class="tag tag-unresolved">
+                        Unresolved
+                    </span>
+            <h5>{{ item[1] }} (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)</h5>
+
+                    {% if item[2] %}
+                    <div class="status">
+                      <span class="status-unresolved">
+                        Unresolved on v{{ item[4] }}
+                      </span>
+                      <span class="status-resolved">
+                        {% if versions[item[2]] %}
+                          {% if is_mobile %}
+                            <a href="/{{ versions[item[2]]['mobile-url'] }}">
+                          {% else %}
+                            <a href="/{{ versions[item[2]]['desktop-url'] }}">
+                          {% endif %}
+                          Resolved in v{{ item[2] }}
+                          </a>
+                        {% else %}
+                          Resolved in v{{ item[2] }}
+                        {% endif %}
+                      </span>
+                    </div>
+                    {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+</div><!-- end #main-content div -->
+
+<div id="sidebar">
+
+    <section id="get-involved">
+      <h3>Want to get involved?</h3
+      <p>Firefox OS is an open web  platform and there are plenty of opportunities to contribute in both  technical and <a href="https://support.mozilla.org/en-US/kb/how-contribute-firefox-os-even-if-youre-not-techni">non-technical</a> areas.</p>
+      <p><a href="http://www.mozilla.org/en-US/contribute/">Learn more >></a></p>
+    </section>
+
+    <section id="developers">
+      <h3>Develop for Firefox OS</h3>
+      <ol>
+        <li><a href="https://marketplace.firefox.com/developers/">Start Here</a></li>
+        <li><a href="https://developer.mozilla.org/en/docs/Mozilla/Firefox_OS">All the docs</a></li>
+        <li>Firefox OS Simulators: <a href="https://addons.mozilla.org/en-US/firefox/addon/firefox-os-simulator/">[1]</a> and <a href="http://people.mozilla.org/~myk/r2d2b2g/">[2]</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox_OS/Building_and_installing_Firefox_OS">Build & Install Firefox OS</a></li>
+        <li>Get the code: <a href="https://github.com/mozilla-b2g/gaia/">Gaia</a> and <a href="https://github.com/mozilla/mozilla-central/tree/master/b2g">Gecko</a></li>
+        <li><a href="https://bugzilla.mozilla.org/buglist.cgi?list_id=6785406&resolution=---&query_format=advanced&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=REOPENED&product=Boot2Gecko">Known Bugs</a></li>
+      </ol>
+    </section>
+
+    <section id="version">
+      <h3>How do the version numbers work?</h3>
+      <p>Firefox OS has a 4 digit version number: X.X.X.Y</p>
+      <p>The first 2 digits are owned by the Mozilla product team and will denote releases with new features (eg: v1.1, 1.2, etc).  The third digit will be incremented with regular release tags (~every 6 weeks) for security updates, and the fourth will be OEM owned.</p>
+    </section>
+
+    <section id="other">
+        <h3>Other Resources</h3>
+      <p><a href="https://www.mozilla.org/en-US/firefox/partners/">Partner Information »</a></p>
+      <p><a href="https://blog.mozilla.com/firefoxos/">Firefox OS Blog »</a></p>
+    </section>
+
+</div>
+
+<?php
+    @include_once "{$config['file_root']}/{$lang}/includes/footer.inc.php";
+?>
+
