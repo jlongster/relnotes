@@ -1,3 +1,7 @@
 *.pyc
+secrets.py
 relnotes.sqlite
-out.html
+.DS_Store
+.dropbox
+"Icon\r"
+

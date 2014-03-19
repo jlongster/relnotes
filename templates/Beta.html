@@ -19,7 +19,7 @@ $fonts = <<<FONTS
 FONTS;
 
     $extra_headers = <<<EXTRA_HEADERS
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,800,800italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{$config['static_prefix']}/style/covehead/beta-notes.css" media="screen" />
 EXTRA_HEADERS;
     include_once "{$config['file_root']}/{$lang}/includes/header.inc.php";
@@ -34,12 +34,12 @@ EXTRA_HEADERS;
               {% if not is_mobile %}
               <span>Desktop</span>
               {% else %}
-            <a href="/{{ versions[version]['desktop-url'] }}">Desktop</a>
+            <a href="/firefox/{{ version_text }}/releasenotes/">Desktop</a>
               {% endif %}
             </li>
             <li>
               {% if not is_mobile %}
-            <a href="/{{ versions[version]['mobile-url'] }}">Mobile</a>
+	      <a href="/mobile/{{ version_text }}/releasenotes/">Mobile</a>
               {% else %}
               <span>Mobile</span>
               {% endif %}
@@ -48,7 +48,7 @@ EXTRA_HEADERS;
     </div>
     <h2>
         <img src="<?=$config['static_prefix']?>/img/covehead/firefox/beta/notes/title.png" alt="Firefox Beta" height="156" width="482" />
-        Notes <small>(First offered to Beta channel users on {{ release_date }})</small>
+	{% if not is_mobile %}Desktop{% else %}Mobile{% endif %} Notes <small>(First offered to Beta channel users on {{ release_date }})</small>
     </h2>
     {% if release_text %}{{ release_text }}{% endif %}
     {% if product_text %}{{ product_text }}{% endif %}
@@ -92,7 +92,7 @@ EXTRA_HEADERS;
                     <span class="tag tag-unresolved">
                         Unresolved
                     </span>
-                    <h5>{{ item[1] }}</h5>
+		    <h5>{{ item[1] }} (see <a href="https://bugzilla.mozilla.org/show_bug.cgi?id={{ item[0] }}">{{ item[0] }}</a>)</h5>
 
                     {% if item[2] %}
                     <div class="status">
@@ -133,13 +133,13 @@ EXTRA_HEADERS;
             </a>
           </li>
           <li id="try2">
-            <a href="/firefox/beta/">
+            <a href="/{% if is_mobile %}mobile{% else %}firefox{% endif %}/beta/">
               Download »
             </a>
           </li>
           {% if not is_mobile %}
-          <li id="try3"><a href="https://support.mozilla.com/en-US/kb/Installing%20Firefox">Install »</a></li>
-          <li id="try4"><a href="https://addons.mozilla.org/en-US/firefox/">Customize »</a></li>
+          <li id="try3"><a href="https://support.mozilla.org/kb/Installing%20Firefox">Install »</a></li>
+          <li id="try4"><a href="https://addons.mozilla.org/firefox/">Customize »</a></li>
           {% endif %}
         </ol>
     </section>
@@ -154,7 +154,7 @@ EXTRA_HEADERS;
     <section id="problems">
         <h3>Having Problems?</h3>
         <ol>
-          <li><a href="http://support.mozilla.com/">Search for answers on the Firefox Support page »</a></li>
+          <li><a href="http://support.mozilla.org/">Search for answers on the Firefox Support page »</a></li>
           <li><a href="#knownissues">Look at the known issues list and see if we already know about the problem »</a></li>
           <li><a href="https://bugzilla.mozilla.org/enter_bug.cgi">If you can’t find reference to your issue, please consider filing a technical bug report »</a></li>
         </ol>
@@ -163,7 +163,7 @@ EXTRA_HEADERS;
 
     <section id="other">
         <h3>Other Resources</h3>
-      <p><a href="https://developer.mozilla.org/en/Firefox_10_for_developers">Developer Information »</a></p>
+      <p><a href="https://developer.mozilla.org/docs/Mozilla/Firefox/Releases/{{ version }}">Developer Information »</a></p>
       <p><a href="https://blog.mozilla.com/futurereleases/">Future of Firefox Blog »</a></p>
     </section>
 
